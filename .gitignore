@@ -1,2 +1,6 @@
 .idea/*
-./internal/cloud/delivery/rest/generated/*
+/internal/cloud/rest/generated/*
+/internal/cloud/mocks/*
+/configs/main.yaml
+/.data/*
+/static/swagger-ui/generated/*
