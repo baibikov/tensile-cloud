@@ -38,11 +38,7 @@ func initCloud(config config.Config, store multistore.Store) (httpserver.Handler
 
 	logrus.Info("init app cloud rest handlers")
 	handler, err := rest.New(restConfig, restUseCase)
-	if err != nil {
-		return nil, errors.Wrap(err, "init app cloud rest handlers")
-	}
-
-	return handler, nil
+	return handler, errors.Wrap(err, "init app cloud rest handlers")
 }
 
 type pgComponent struct {
