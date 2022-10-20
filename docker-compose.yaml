@@ -1,0 +1,12 @@
+version: '3.1'
+services:
+  cloud-db:
+    container_name: tensive-cloud-db
+    image: postgres
+    restart: always
+    ports:
+      - "54301:5432"
+    environment:
+      POSTGRES_PASSWORD: 123
+      POSTGRES_USER: root
+      POSTGRES_DB: cloud

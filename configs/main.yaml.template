@@ -1,0 +1,5 @@
+api:
+  host: "localhost:9090"
+
+db:
+  conn: postgres://root:123@localhost:54301/cloud?sslmode=disables
