@@ -1,0 +1,342 @@
+swagger: "2.0"
+info:
+  title: Use cloud API
+  version: 1.0.0
+consumes:
+  - application/json
+produces:
+  - application/json
+schemes:
+  - http
+  - https
+basePath: /api/cloud
+paths:
+
+  # files
+  /v1/files:
+    post:
+      tags:
+        - files
+      consumes:
+        - multipart/form-data
+      operationId: Upload
+      parameters:
+        - in: formData
+          name: folderId
+          type: string
+          required: true
+      responses:
+        200:
+          description: getting directory by parent id
+          schema:
+            $ref: "#/definitions/createdFiles"
+        default:
+          description: generic error response
+          schema:
+            $ref: "#/definitions/error"
+
+  /v1/files/move:
+    post:
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/moveFilesRequest'
+      tags:
+        - files
+      operationId: Move
+      responses:
+        200:
+          description: moving files ok
+        default:
+          description: generic error response
+          schema:
+            $ref: "#/definitions/error"
+
+  /v1/files/copy:
+    post:
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/copyFileRequest'
+      tags:
+        - files
+      operationId: Copy
+      responses:
+        200:
+          description: copy file ok
+          schema:
+            $ref: '#/definitions/file'
+        default:
+          description: generic error response
+          schema:
+            $ref: "#/definitions/error"
+
+  /v1/files/{id}/download:
+    parameters:
+      - in: path
+        name: id
+        type: string
+        required: true
+    get:
+      produces:
+        - application/octet-stream
+      tags:
+        - files
+      operationId: Download
+      responses:
+        200:
+          headers:
+            content-disposition:
+              type: string
+          description: download file
+          schema:
+            type: file
+        default:
+          description: generic error response
+          schema:
+            $ref: "#/definitions/error"
+
+  /v1/files/{id}:
+    parameters:
+      - in: path
+        name: id
+        type: string
+        required: true
+    put:
+      parameters:
+        - in: body
+          name: body
+          schema:
+            $ref: '#/definitions/renameFileRequest'
+      tags:
+        - files
+      operationId: Rename
+      responses:
+        200:
+          description: getiing renamed file information
+          schema:
+            $ref: "#/definitions/file"
+        default:
+          description: generic error response
+          schema:
+            $ref: "#/definitions/error"
+
+  #directory
+
+  /v1/directory:
+    get:
+      tags:
+        - directory
+      operationId: GetDirectory
+      parameters:
+        - in: query
+          name: parentId
+          type: string
+          required: false
+      responses:
+        200:
+          description: getting directory by parent id
+          schema:
+            $ref: "#/definitions/directory"
+        default:
+          description: generic error response
+          schema:
+            $ref: "#/definitions/error"
+
+  # folders
+  /v1/folders/{id}:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        type: string
+    put:
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            $ref: "#/definitions/updateFolderRequest"
+      tags:
+        - folder
+      operationId: Update
+      responses:
+        200:
+          description: updating folder by id
+          schema:
+            $ref: "#/definitions/folder"
+        default:
+          description: generic error response
+          schema:
+            $ref: "#/definitions/error"
+
+  /v1/folders:
+    post:
+      tags:
+        - folder
+      operationId: Create
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            $ref: "#/definitions/createFolderRequest"
+      responses:
+        200:
+          description: getting generated folder id
+          schema:
+            $ref: "#/definitions/folder"
+        default:
+          description: generic error response
+          schema:
+            $ref: "#/definitions/error"
+
+definitions:
+
+  copyFileRequest:
+    type: object
+    properties:
+      copyId:
+        type: string
+        x-omitempty: false
+      folderId:
+        type: string
+        x-omitempty: false
+      name:
+        type: string
+        x-omitempty: false
+    required:
+      - copyId
+      - folderId
+
+  moveFilesRequest:
+    type: object
+    properties:
+      folderId:
+        type: string
+        x-omitempty: false
+      filesId:
+        type: array
+        items:
+          type: string
+        x-omitempty: false
+    required:
+      - folderId
+      - filesId
+
+  updateFolderRequest:
+    type: object
+    properties:
+      name:
+        type: string
+        x-omitempty: false
+        minLength: 1
+    required:
+      - name
+
+  createFolderRequest:
+    type: object
+    properties:
+      parentId:
+        type: string
+        default: root
+        x-omitempty: false
+      name:
+        type: string
+        x-omitempty: false
+        minLength: 1
+    required:
+      - name
+      - parentId
+
+  file:
+    type: object
+    properties:
+      id:
+        type: string
+        x-omitempty: false
+      name:
+        type: string
+        x-omitempty: false
+      type:
+        type: string
+        x-omitempty: false
+      createdAt:
+        type: integer
+        format: int64
+        x-omitempty: false
+      link:
+        type: string
+        x-omitempty: false
+      updatedAt:
+        type: integer
+        format: int64
+        x-omitempty: false
+
+  createdFiles:
+    type: object
+    properties:
+      files:
+        type: array
+        items:
+          $ref: '#/definitions/file'
+        x-omitempty: false
+
+  renameFileRequest:
+    type: object
+    properties:
+      name:
+        type: string
+        x-omitempty: false
+    required:
+      - name
+
+  directory:
+    type: object
+    properties:
+      folders:
+        type: array
+        items:
+          $ref: "#/definitions/folder"
+        x-omitempty: false
+      files:
+        type: array
+        items:
+          $ref: "#/definitions/file"
+        x-omitempty: false
+
+  folder:
+    type: object
+    properties:
+      parentId:
+        type: string
+        x-omitempty: false
+        x-nullable: true
+      id:
+        type: string
+        x-omitempty: false
+      name:
+        type: string
+        x-omitempty: false
+      createdAt:
+        type: integer
+        format: int64
+        x-omitempty: false
+      updatedAt:
+        type: integer
+        format: int64
+        x-omitempty: false
+  error:
+    type: object
+    required:
+      - message
+    properties:
+      code:
+        type: integer
+        format: int64
+      message:
+        type: string
