@@ -1,6 +1,6 @@
 .idea/*
+configs/main.yaml
 /internal/cloud/rest/generated/*
 /internal/cloud/mocks/*
-/configs/main.yaml
 /.data/*
 /static/swagger-ui/generated/*
