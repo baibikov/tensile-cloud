@@ -29,6 +29,7 @@ type File interface {
 	Move(ctx context.Context, move types.Move) error
 	Download(ctx context.Context, id string) (types.DownloadFile, error)
 	Copy(ctx context.Context, file types.CopyFile) (created types.File, err error)
+	MarkDelete(ctx context.Context, id []string) error
 }
 
 type Config struct {
@@ -75,6 +76,6 @@ func New(config *Config, cloud *UseCase) (*Handler, error) {
 	h.api.FilesMoveHandler = files.MoveHandlerFunc(h.MoveFileHandler)
 	h.api.FilesDownloadHandler = files.DownloadHandlerFunc(h.DownloadFileHandler)
 	h.api.FilesCopyHandler = files.CopyHandlerFunc(h.CopyFileHandler)
-
+	h.api.FilesMarkDeleteHandler = files.MarkDeleteHandlerFunc(h.MarkDeleteFileHandler)
 	return h, nil
 }

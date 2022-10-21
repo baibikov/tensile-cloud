@@ -45,7 +45,16 @@ func (f *File) RemoveMeta(ctx context.Context, id string) error {
 
 func (f *File) GetByFolderID(ctx context.Context, folderID string) (files []types.File, err error) {
 	query := `
-		select id, type, name, format, created_at, updated_at from files where folder_id = $1
+		select 
+		       id, 
+		       type,
+		       name,
+		       format,
+		       created_at,
+		       updated_at 
+		from files 
+		where folder_id = $1 
+		  and is_deleted = false
 	`
 
 	return files, f.db.SelectContext(ctx, &files, query, folderID)
@@ -85,4 +94,13 @@ func (f *File) GetByID(ctx context.Context, id string) (ff types.File, err error
 	`
 
 	return ff, f.db.GetContext(ctx, &ff, query, id)
+}
+
+func (f *File) MarkDelete(ctx context.Context, id []string) error {
+	query := ` 
+		update files set is_deleted=true, deleted_at = now() where id=any($2)
+	`
+
+	_, err := f.db.ExecContext(ctx, query, pq.StringArray(id))
+	return err
 }

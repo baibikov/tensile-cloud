@@ -19,6 +19,7 @@ type FileRepository interface {
 	Open(ctx context.Context, name string) (io.ReadCloser, error)
 	Copy(ctx context.Context, dst, src string) (err error)
 	GetByID(ctx context.Context, id string) (ff types.File, err error)
+	MarkDelete(ctx context.Context, id []string) error
 }
 
 var (
@@ -57,7 +58,7 @@ func (f File) Upload(ctx context.Context, files []types.File) ([]types.Upload, e
 func (f *File) uploadSave(ctx context.Context, file types.File) (upload types.Upload, err error) {
 	defer func() {
 		if err != nil {
-			multierr.AppendInto(&err, f.uploadRollback(ctx, upload.ID, upload.FileName()))
+			multierr.AppendInto(&err, f.rollbackSavedFile(ctx, upload.ID, upload.FileName()))
 		}
 
 		multierr.AppendInto(&err, file.Body.Close())
@@ -89,7 +90,7 @@ func (f *File) uploadSave(ctx context.Context, file types.File) (upload types.Up
 	}, nil
 }
 
-func (f *File) uploadRollback(ctx context.Context, id, filename string) error {
+func (f *File) rollbackSavedFile(ctx context.Context, id, filename string) error {
 	if id == "" {
 		return nil
 	}
@@ -173,7 +174,7 @@ func (f *File) Copy(ctx context.Context, fcopy types.CopyFile) (created types.Fi
 	}
 	defer func() {
 		if err != nil {
-			multierr.AppendInto(&err, f.uploadRollback(ctx, created.ID, created.FileName()))
+			multierr.AppendInto(&err, f.rollbackSavedFile(ctx, created.ID, created.FileName()))
 		}
 	}()
 
@@ -197,6 +198,13 @@ func (f *File) Copy(ctx context.Context, fcopy types.CopyFile) (created types.Fi
 	}
 
 	return created, f.filerepo.Copy(ctx, created.FileName(), src.FileName())
+}
+
+func (f *File) MarkDelete(ctx context.Context, id []string) error {
+	return errors.Wrap(
+		f.filerepo.MarkDelete(ctx, id),
+		"deleted files",
+	)
 }
 
 func isFileExists(ctx context.Context, repository FileRepository, id string) error {

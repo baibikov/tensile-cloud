@@ -34,6 +34,23 @@ paths:
           description: generic error response
           schema:
             $ref: "#/definitions/error"
+    delete:
+      tags:
+        - files
+      operationId: MarkDelete
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/markDeleteFilesRequest'
+      responses:
+        200:
+          description: mark delete (move to trash) ok
+        default:
+          description: generic error response
+          schema:
+            $ref: "#/definitions/error"
 
   /v1/files/move:
     post:
@@ -196,6 +213,16 @@ paths:
             $ref: "#/definitions/error"
 
 definitions:
+
+  markDeleteFilesRequest:
+    properties:
+      filesId:
+        type: array
+        items:
+          type: string
+        x-omitempty: false
+    required:
+      - filesId
 
   copyFileRequest:
     type: object
