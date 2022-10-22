@@ -55,7 +55,7 @@ func (f File) Upload(ctx context.Context, files []types.File) ([]types.Upload, e
 	return res, nil
 }
 
-func (f *File) uploadSave(ctx context.Context, file types.File) (upload types.Upload, err error) {
+func (f File) uploadSave(ctx context.Context, file types.File) (upload types.Upload, err error) {
 	defer func() {
 		if err != nil {
 			multierr.AppendInto(&err, f.rollbackSavedFile(ctx, upload.ID, upload.FileName()))
@@ -90,7 +90,7 @@ func (f *File) uploadSave(ctx context.Context, file types.File) (upload types.Up
 	}, nil
 }
 
-func (f *File) rollbackSavedFile(ctx context.Context, id, filename string) error {
+func (f File) rollbackSavedFile(ctx context.Context, id, filename string) error {
 	if id == "" {
 		return nil
 	}
@@ -112,7 +112,7 @@ func (f *File) rollbackSavedFile(ctx context.Context, id, filename string) error
 	return resErr
 }
 
-func (f *File) Find(ctx context.Context, folderID string) ([]types.File, error) {
+func (f File) Find(ctx context.Context, folderID string) ([]types.File, error) {
 	err := isFolderExists(ctx, f.folderrepo, folderID)
 	if err != nil {
 		return nil, err
@@ -122,7 +122,7 @@ func (f *File) Find(ctx context.Context, folderID string) ([]types.File, error) 
 	return ff, errors.Wrapf(err, "getting files by folder id - %s", folderID)
 }
 
-func (f *File) Rename(ctx context.Context, file types.File) (types.File, error) {
+func (f File) Rename(ctx context.Context, file types.File) (types.File, error) {
 	err := isFileExists(ctx, f.filerepo, file.ID)
 	if err != nil {
 		return types.File{}, err
@@ -132,7 +132,7 @@ func (f *File) Rename(ctx context.Context, file types.File) (types.File, error) 
 	return ff, errors.Wrapf(err, "renaming file by id - %s, name - %s", file.ID, file.Name)
 }
 
-func (f *File) Move(ctx context.Context, move types.Move) error {
+func (f File) Move(ctx context.Context, move types.Move) error {
 	err := isFolderExists(ctx, f.folderrepo, move.FolderID)
 	if err != nil {
 		return err
@@ -145,7 +145,7 @@ func (f *File) Move(ctx context.Context, move types.Move) error {
 	)
 }
 
-func (f *File) Download(ctx context.Context, id string) (types.DownloadFile, error) {
+func (f File) Download(ctx context.Context, id string) (types.DownloadFile, error) {
 	err := isFileExists(ctx, f.filerepo, id)
 	if err != nil {
 		return types.DownloadFile{}, err
@@ -167,7 +167,7 @@ func (f *File) Download(ctx context.Context, id string) (types.DownloadFile, err
 	}, nil
 }
 
-func (f *File) Copy(ctx context.Context, fcopy types.CopyFile) (created types.File, err error) {
+func (f File) Copy(ctx context.Context, fcopy types.CopyFile) (created types.File, err error) {
 	err = isFileExists(ctx, f.filerepo, fcopy.CopyID)
 	if err != nil {
 		return types.File{}, err
@@ -200,7 +200,7 @@ func (f *File) Copy(ctx context.Context, fcopy types.CopyFile) (created types.Fi
 	return created, f.filerepo.Copy(ctx, created.FileName(), src.FileName())
 }
 
-func (f *File) MarkDelete(ctx context.Context, id []string) error {
+func (f File) MarkDelete(ctx context.Context, id []string) error {
 	return errors.Wrap(
 		f.filerepo.MarkDelete(ctx, id),
 		"deleted files",
