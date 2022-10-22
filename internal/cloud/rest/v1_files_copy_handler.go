@@ -10,7 +10,7 @@ import (
 	"github.com/baibikov/tensile-cloud/pkg/httperr"
 )
 
-func (h *Handler) CopyFileHandler(params files.CopyParams) middleware.Responder {
+func (h *Handler) V1CopyFileHandler(params files.CopyParams) middleware.Responder {
 	file, err := h.cloud.File.Copy(params.HTTPRequest.Context(), types.CopyFile{
 		CopyID:   swag.StringValue(params.Body.CopyID),
 		FolderID: swag.StringValue(params.Body.FolderID),

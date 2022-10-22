@@ -64,18 +64,18 @@ func New(config *Config, cloud *UseCase) (*Handler, error) {
 	}
 
 	// folder
-	h.api.FolderCreateHandler = folder.CreateHandlerFunc(h.FolderCreateHandler)
-	h.api.FolderUpdateHandler = folder.UpdateHandlerFunc(h.FolderUpdateHandler)
+	h.api.FolderCreateHandler = folder.CreateHandlerFunc(h.V1FolderCreateHandler)
+	h.api.FolderUpdateHandler = folder.UpdateHandlerFunc(h.V1FolderUpdateHandler)
 
 	// directory
-	h.api.DirectoryGetDirectoryHandler = directory.GetDirectoryHandlerFunc(h.DirectoryListHandler)
+	h.api.DirectoryGetDirectoryHandler = directory.GetDirectoryHandlerFunc(h.V1DirectoryListHandler)
 
 	// files
-	h.api.FilesUploadHandler = files.UploadHandlerFunc(h.UploadFilesHandler)
-	h.api.FilesRenameHandler = files.RenameHandlerFunc(h.RenameFileHandler)
-	h.api.FilesMoveHandler = files.MoveHandlerFunc(h.MoveFileHandler)
-	h.api.FilesDownloadHandler = files.DownloadHandlerFunc(h.DownloadFileHandler)
-	h.api.FilesCopyHandler = files.CopyHandlerFunc(h.CopyFileHandler)
-	h.api.FilesMarkDeleteHandler = files.MarkDeleteHandlerFunc(h.MarkDeleteFileHandler)
+	h.api.FilesUploadHandler = files.UploadHandlerFunc(h.V1UploadFilesHandler)
+	h.api.FilesRenameHandler = files.RenameHandlerFunc(h.V1RenameFileHandler)
+	h.api.FilesMoveHandler = files.MoveHandlerFunc(h.V1MoveFileHandler)
+	h.api.FilesDownloadHandler = files.DownloadHandlerFunc(h.V1DownloadFileHandler)
+	h.api.FilesCopyHandler = files.CopyHandlerFunc(h.V1CopyFileHandler)
+	h.api.FilesMarkDeleteHandler = files.MarkDeleteHandlerFunc(h.V1MarkDeleteFileHandler)
 	return h, nil
 }

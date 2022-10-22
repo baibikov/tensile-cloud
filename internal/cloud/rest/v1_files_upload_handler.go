@@ -14,7 +14,7 @@ const (
 	filesMultiPartFormKey = "files"
 )
 
-func (h *Handler) UploadFilesHandler(params files.UploadParams) middleware.Responder {
+func (h *Handler) V1UploadFilesHandler(params files.UploadParams) middleware.Responder {
 	err := params.HTTPRequest.ParseMultipartForm(h.config.UploadSize)
 	if err != nil {
 		return httperr.New().Bad(err)

@@ -10,7 +10,7 @@ import (
 	"github.com/baibikov/tensile-cloud/pkg/httperr"
 )
 
-func (h *Handler) FolderUpdateHandler(params folder.UpdateParams) middleware.Responder {
+func (h *Handler) V1FolderUpdateHandler(params folder.UpdateParams) middleware.Responder {
 	res, err := h.cloud.Folder.Update(params.HTTPRequest.Context(), types.Folder{
 		ID:   params.ID,
 		Name: swag.StringValue(params.Body.Name),

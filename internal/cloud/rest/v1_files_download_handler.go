@@ -9,7 +9,7 @@ import (
 	"github.com/baibikov/tensile-cloud/pkg/httperr"
 )
 
-func (h *Handler) DownloadFileHandler(params files.DownloadParams) middleware.Responder {
+func (h *Handler) V1DownloadFileHandler(params files.DownloadParams) middleware.Responder {
 	res, err := h.cloud.File.Download(params.HTTPRequest.Context(), params.ID)
 	if err != nil {
 		return httperr.New().Bad(err)

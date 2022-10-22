@@ -7,7 +7,7 @@ import (
 	"github.com/baibikov/tensile-cloud/pkg/httperr"
 )
 
-func (h *Handler) MarkDeleteFileHandler(params files.MarkDeleteParams) middleware.Responder {
+func (h *Handler) V1MarkDeleteFileHandler(params files.MarkDeleteParams) middleware.Responder {
 	err := h.cloud.File.MarkDelete(params.HTTPRequest.Context(), params.Body.FilesID)
 	if err != nil {
 		return httperr.New().Bad(err)

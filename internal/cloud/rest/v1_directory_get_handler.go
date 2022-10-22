@@ -8,7 +8,7 @@ import (
 	"github.com/baibikov/tensile-cloud/pkg/httperr"
 )
 
-func (h *Handler) DirectoryListHandler(params directory.GetDirectoryParams) middleware.Responder {
+func (h *Handler) V1DirectoryListHandler(params directory.GetDirectoryParams) middleware.Responder {
 	ctx := params.HTTPRequest.Context()
 	resfolders, err := h.cloud.Folder.Find(ctx, params.ParentID)
 	if err != nil {

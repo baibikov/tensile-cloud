@@ -10,7 +10,7 @@ import (
 	"github.com/baibikov/tensile-cloud/pkg/httperr"
 )
 
-func (h *Handler) RenameFileHandler(params files.RenameParams) middleware.Responder {
+func (h *Handler) V1RenameFileHandler(params files.RenameParams) middleware.Responder {
 	updated, err := h.cloud.File.Rename(params.HTTPRequest.Context(), types.File{
 		ID:   params.ID,
 		Name: swag.StringValue(params.Body.Name),
