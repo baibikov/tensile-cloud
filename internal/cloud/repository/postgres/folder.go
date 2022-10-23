@@ -73,7 +73,7 @@ func (f Folder) Get(ctx context.Context, id string) (*types.Folder, error) {
 	return folder, err
 }
 
-func (f Folder) GetByParent(ctx context.Context, parentID *string) (folders []*types.Folder, err error) {
+func (f Folder) GetByParent(ctx context.Context, parentID *string, sort types.Sort) (folders []*types.Folder, err error) {
 	sb := f.sb.
 		Select(
 			"id",
@@ -89,8 +89,9 @@ func (f Folder) GetByParent(ctx context.Context, parentID *string) (folders []*t
 	} else {
 		sb = sb.Where(sb.Equal("parent_id", *parentID))
 	}
-
 	query, args := sb.Build()
+	query = NewSort(sort, newColumnsDef("name", "created_at", "updated_at")).OrderQuery(query)
+
 	return folders, f.db.SelectContext(ctx, &folders, query, args...)
 }
 

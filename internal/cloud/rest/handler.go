@@ -17,7 +17,7 @@ import (
 
 type Folder interface {
 	Folder(ctx context.Context, id string) (types.Folder, error)
-	Find(ctx context.Context, parentID *string) ([]*types.Folder, error)
+	Find(ctx context.Context, parentID *string, sort types.Sort) ([]*types.Folder, error)
 	Create(ctx context.Context, folder types.Folder) (types.Folder, error)
 	Update(ctx context.Context, folder types.Folder) (types.Folder, error)
 }
@@ -77,5 +77,6 @@ func New(config *Config, cloud *UseCase) (*Handler, error) {
 	h.api.FilesDownloadHandler = files.DownloadHandlerFunc(h.V1DownloadFileHandler)
 	h.api.FilesCopyHandler = files.CopyHandlerFunc(h.V1CopyFileHandler)
 	h.api.FilesMarkDeleteHandler = files.MarkDeleteHandlerFunc(h.V1MarkDeleteFileHandler)
+
 	return h, nil
 }

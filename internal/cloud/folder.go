@@ -14,7 +14,8 @@ type FolderRepository interface {
 	Get(ctx context.Context, id string) (*types.Folder, error)
 	// GetByParent recursive getting folders directory where parent id
 	// if parent id is nil, then return root directory.
-	GetByParent(ctx context.Context, parentID *string) ([]*types.Folder, error)
+	// sort is param to sorting folders tree
+	GetByParent(ctx context.Context, parentID *string, sort types.Sort) (folders []*types.Folder, err error)
 	// Create - create folder and return created folder
 	Create(ctx context.Context, folder types.Folder) (types.Folder, error)
 	// ExistsByID check exists folder where id return ok if folder exists
@@ -38,8 +39,8 @@ type Folder struct {
 	folderrepo FolderRepository
 }
 
-func (f Folder) Find(ctx context.Context, parentID *string) ([]*types.Folder, error) {
-	ff, err := f.folderrepo.GetByParent(ctx, parentID)
+func (f Folder) Find(ctx context.Context, parentID *string, sort types.Sort) ([]*types.Folder, error) {
+	ff, err := f.folderrepo.GetByParent(ctx, parentID, sort)
 	return ff, errors.Wrap(err, "getting sub-folders")
 }
 

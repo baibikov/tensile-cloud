@@ -5,12 +5,17 @@ import (
 
 	"github.com/baibikov/tensile-cloud/internal/cloud/rest/generated/models"
 	"github.com/baibikov/tensile-cloud/internal/cloud/rest/generated/ops/operations/directory"
+	"github.com/baibikov/tensile-cloud/internal/cloud/types"
 	"github.com/baibikov/tensile-cloud/pkg/httperr"
 )
 
 func (h *Handler) V1DirectoryListHandler(params directory.GetDirectoryParams) middleware.Responder {
 	ctx := params.HTTPRequest.Context()
-	resfolders, err := h.cloud.Folder.Find(ctx, params.ParentID)
+	resfolders, err := h.cloud.Folder.Find(
+		ctx,
+		params.ParentID,
+		types.NewSort(params.Sort, params.SortType),
+	)
 	if err != nil {
 		return httperr.New().Bad(err)
 	}

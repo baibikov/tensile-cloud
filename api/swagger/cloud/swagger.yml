@@ -145,6 +145,18 @@ paths:
   #directory
 
   /v1/directory:
+    parameters:
+      - in: query
+        name: sort
+        type: string
+        required: false
+      - in: query
+        name: sortType
+        type: string
+        enum:
+          - asc
+          - desc
+        required: false
     get:
       tags:
         - directory
