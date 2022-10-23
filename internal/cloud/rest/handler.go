@@ -15,7 +15,7 @@ import (
 	"github.com/baibikov/tensile-cloud/internal/cloud/types"
 )
 
-//go:generate swagger generate server -f ../../../api/swagger/cloud/swagger.yml --exclude-main -A clouder -t ./generated -s ops
+//go:generate swagger generate server -f ../../../api/swagger/cloud-swagger.yml --exclude-main -A clouder -t ./generated -s ops
 
 type Folder interface {
 	Folder(ctx context.Context, id string) (types.Folder, error)
