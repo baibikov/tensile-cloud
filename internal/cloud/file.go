@@ -12,13 +12,27 @@ import (
 )
 
 type FileRepository interface {
+	// IsExists check file exists by id (file id)
 	IsExists(ctx context.Context, id string) (ok bool, err error)
+	// GetByFolderID return files info by folderID (folder binding)
 	GetByFolderID(ctx context.Context, folderID string) ([]types.File, error)
+	// UpdateName - update file name where file id
+	// return updated file info
 	UpdateName(ctx context.Context, id, name string) (updated types.File, err error)
+	// UpdateFolderID - update files folder id by files id
 	UpdateFolderID(ctx context.Context, id []string, folderID string) error
+	// Open opening file by name with full file information like: file.txt,
+	// without full dir path
+	// use with file information id like: 4d2e16db-3bb4-430d-b7e6-6844da203595.pdf
 	Open(ctx context.Context, name string) (io.ReadCloser, error)
+	// Copy copied some file
+	// dst is a destination file name with file information (with type)
+	// src is a source file name with file information (with type)
 	Copy(ctx context.Context, dst, src string) (err error)
+	// GetByID getting file by id
 	GetByID(ctx context.Context, id string) (ff types.File, err error)
+	// MarkDelete is a safety delete file info
+	// don't delete some file by mark delete
 	MarkDelete(ctx context.Context, id []string) error
 }
 
