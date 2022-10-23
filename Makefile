@@ -5,14 +5,29 @@ down-swagger-folders:
 	rm -rf ./internal/cloud/rest/generated
 
 swagger-folders: down-swagger-folders up-swagger-folders
+	echo "swagger folders made"
 
-swagger-cloud:
-	swagger generate server -f ./api/swagger/cloud/swagger.yml --exclude-main -A clouder -t ./internal/cloud/rest/generated -s ops
-
-swagger-generated:
+swagger-ui-folders:
+	rm -rf static/swagger-ui/generated
 	mkdir -p static/swagger-ui/generated
 
 copy-swaggers:
 	cp ./api/swagger/cloud/swagger.yml ./static/swagger-ui/generated/cloud.yml
 
-swagger: swagger-folders swagger-generated copy-swaggers swagger-cloud
+swagger-ui: swagger-ui-folders copy-swaggers
+	echo "swagger-ui generated"
+
+up-mock-folders:
+	mkdir internal/cloud/mocks
+
+down-mocks-folders:
+	rm -rf internal/cloud/mocks
+
+mock-folders: down-mocks-folders up-mock-folders
+	echo "mock folders made"
+
+go-generate:
+	go generate ./...
+
+generate: swagger-folders mock-folders go-generate swagger-ui
+	echo "project generated"
