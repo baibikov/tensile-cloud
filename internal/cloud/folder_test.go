@@ -5,6 +5,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/go-openapi/swag"
 	"github.com/gojuno/minimock/v3"
 	"github.com/stretchr/testify/suite"
 
@@ -29,38 +30,190 @@ func (f *FolderSuite) SetupTest() {
 }
 
 func (f *FolderSuite) TestFind() {
-	mockTime := time.Now()
-	mockCtx := context.Background()
+	defer f.foldermock.MinimockGetByParentDone()
+	ctx := context.Background()
+	mocktime := time.Now()
 
-	mockFolders1 := []*types.Folder{
+	f.foldermock.GetByParentMock.When(
+		ctx,
+		nil,
+		types.NewSort(swag.String("name"), nil),
+	).Then([]*types.Folder{
 		{
 			ID:        "1",
-			Name:      "testname",
-			CreatedAt: mockTime,
-			UpdatedAt: mockTime,
+			Name:      "folder_test_1",
+			CreatedAt: mocktime,
+			UpdatedAt: mocktime,
 		},
-	}
-	mockFolders2 := []*types.Folder{
 		{
 			ID:        "2",
-			Name:      "testname",
-			CreatedAt: mockTime,
-			UpdatedAt: mockTime,
+			Name:      "folder_test_2",
+			CreatedAt: mocktime,
+			UpdatedAt: mocktime,
+		},
+		{
+			ID:        "3",
+			Name:      "folder_test_3",
+			CreatedAt: mocktime,
+			UpdatedAt: mocktime,
+		},
+	}, nil)
+
+	f.foldermock.GetByParentMock.When(
+		ctx,
+		nil,
+		types.NewSort(swag.String("name"), swag.String("desc")),
+	).Then([]*types.Folder{
+		{
+			ID:        "3",
+			Name:      "folder_test_3",
+			CreatedAt: mocktime,
+			UpdatedAt: mocktime,
+		},
+		{
+			ID:        "2",
+			Name:      "folder_test_2",
+			CreatedAt: mocktime,
+			UpdatedAt: mocktime,
+		},
+		{
+			ID:        "1",
+			Name:      "folder_test_1",
+			CreatedAt: mocktime,
+			UpdatedAt: mocktime,
+		},
+	}, nil)
+
+	f.foldermock.GetByParentMock.When(ctx,
+		swag.String("generated_uuid"),
+		types.NewSort(swag.String("name"), nil),
+	).Then([]*types.Folder{
+		{
+			ID:        "4",
+			ParentID:  swag.String("generated_uuid"),
+			Name:      "folder_test_4",
+			CreatedAt: mocktime,
+			UpdatedAt: mocktime,
+		},
+		{
+			ID:        "5",
+			ParentID:  swag.String("generated_uuid"),
+			Name:      "folder_test_5",
+			CreatedAt: mocktime,
+			UpdatedAt: mocktime,
+		},
+	}, nil)
+
+	tests := []struct {
+		name string
+		args struct {
+			ctx      context.Context
+			parentID *string
+			sort     types.Sort
+		}
+		want []*types.Folder
+	}{
+		{
+			name: "null parent with sort asc",
+			args: struct {
+				ctx      context.Context
+				parentID *string
+				sort     types.Sort
+			}{
+				ctx:      ctx,
+				parentID: nil,
+				sort:     types.NewSort(swag.String("name"), nil),
+			},
+			want: []*types.Folder{
+				{
+					ID:        "1",
+					Name:      "folder_test_1",
+					CreatedAt: mocktime,
+					UpdatedAt: mocktime,
+				},
+				{
+					ID:        "2",
+					Name:      "folder_test_2",
+					CreatedAt: mocktime,
+					UpdatedAt: mocktime,
+				},
+				{
+					ID:        "3",
+					Name:      "folder_test_3",
+					CreatedAt: mocktime,
+					UpdatedAt: mocktime,
+				},
+			},
+		},
+		{
+			name: "null parent with sort desc",
+			args: struct {
+				ctx      context.Context
+				parentID *string
+				sort     types.Sort
+			}{
+				ctx:      ctx,
+				parentID: nil,
+				sort:     types.NewSort(swag.String("name"), swag.String("desc")),
+			},
+			want: []*types.Folder{
+				{
+					ID:        "3",
+					Name:      "folder_test_3",
+					CreatedAt: mocktime,
+					UpdatedAt: mocktime,
+				},
+				{
+					ID:        "2",
+					Name:      "folder_test_2",
+					CreatedAt: mocktime,
+					UpdatedAt: mocktime,
+				},
+				{
+					ID:        "1",
+					Name:      "folder_test_1",
+					CreatedAt: mocktime,
+					UpdatedAt: mocktime,
+				},
+			},
+		},
+		{
+			name: "has parent with sort asc",
+			args: struct {
+				ctx      context.Context
+				parentID *string
+				sort     types.Sort
+			}{
+				ctx:      ctx,
+				parentID: swag.String("generated_uuid"),
+				sort:     types.NewSort(swag.String("name"), nil),
+			},
+			want: []*types.Folder{
+				{
+					ID:        "4",
+					ParentID:  swag.String("generated_uuid"),
+					Name:      "folder_test_4",
+					CreatedAt: mocktime,
+					UpdatedAt: mocktime,
+				},
+				{
+					ID:        "5",
+					ParentID:  swag.String("generated_uuid"),
+					Name:      "folder_test_5",
+					CreatedAt: mocktime,
+					UpdatedAt: mocktime,
+				},
+			},
 		},
 	}
 
-	f.foldermock.GetByParentMock.Set(func(ctx context.Context, parentID *string) (fpa1 []*types.Folder, err error) {
-		if parentID == nil {
-			return mockFolders1, nil
-		}
-
-		return mockFolders2, nil
-	})
-
-	ff, err := f.folder.Find(mockCtx, nil)
-	f.NoError(err)
-
-	f.Equal(ff, mockFolders1)
+	for _, tt := range tests {
+		f.Run(tt.name, func() {
+			actual, err := f.folder.Find(tt.args.ctx, tt.args.parentID, tt.args.sort)
+			f.Require().NoError(err)
+			f.Require().Equal(tt.want, actual)
+		})
+	}
 }
 
 func TestFolderSuite(t *testing.T) {
