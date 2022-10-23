@@ -15,7 +15,7 @@ type FileRepository interface {
 	// IsExists check file exists by id (file id)
 	IsExists(ctx context.Context, id string) (ok bool, err error)
 	// GetByFolderID return files info by folderID (folder binding)
-	GetByFolderID(ctx context.Context, folderID string) ([]types.File, error)
+	GetByFolderID(ctx context.Context, folderID string, sort types.Sort) ([]types.File, error)
 	// UpdateName - update file name where file id
 	// return updated file info
 	UpdateName(ctx context.Context, id, name string) (updated types.File, err error)
@@ -126,13 +126,13 @@ func (f File) rollbackSavedFile(ctx context.Context, id, filename string) error 
 	return resErr
 }
 
-func (f File) Find(ctx context.Context, folderID string) ([]types.File, error) {
+func (f File) Find(ctx context.Context, folderID string, sort types.Sort) ([]types.File, error) {
 	err := isFolderExists(ctx, f.folderrepo, folderID)
 	if err != nil {
 		return nil, err
 	}
 
-	ff, err := f.filerepo.GetByFolderID(ctx, folderID)
+	ff, err := f.filerepo.GetByFolderID(ctx, folderID, sort)
 	return ff, errors.Wrapf(err, "getting files by folder id - %s", folderID)
 }
 

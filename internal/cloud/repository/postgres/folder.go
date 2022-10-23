@@ -84,13 +84,21 @@ func (f Folder) GetByParent(ctx context.Context, parentID *string, sort types.So
 		).
 		From("folders")
 
-	if parentID != nil {
+	if parentID == nil {
 		sb = sb.Where(sb.IsNull("parent_id"))
 	} else {
 		sb = sb.Where(sb.Equal("parent_id", *parentID))
 	}
 	query, args := sb.Build()
-	query = NewSort(sort, newColumnsDef("name", "created_at", "updated_at")).OrderQuery(query)
+
+	// set sortable columns
+	ssort := NewSort(sort, columnsDef{
+		"name":      "name",
+		"createdAt": "created_at",
+		"updatedAt": "updated_at",
+	})
+
+	query = ssort.OrderQuery(query)
 
 	return folders, f.db.SelectContext(ctx, &folders, query, args...)
 }

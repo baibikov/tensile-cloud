@@ -10,12 +10,12 @@ import (
 )
 
 func (h *Handler) V1DirectoryListHandler(params directory.GetDirectoryParams) middleware.Responder {
-	ctx := params.HTTPRequest.Context()
-	resfolders, err := h.cloud.Folder.Find(
-		ctx,
-		params.ParentID,
-		types.NewSort(params.Sort, params.SortType),
+	var (
+		ctx  = params.HTTPRequest.Context()
+		sort = types.NewSort(params.Sort, params.SortType)
 	)
+
+	resfolders, err := h.cloud.Folder.Find(ctx, params.ParentID, sort)
 	if err != nil {
 		return httperr.New().Bad(err)
 	}
@@ -37,7 +37,7 @@ func (h *Handler) V1DirectoryListHandler(params directory.GetDirectoryParams) mi
 		})
 	}
 
-	resfiles, err := h.cloud.File.Find(ctx, *params.ParentID)
+	resfiles, err := h.cloud.File.Find(ctx, *params.ParentID, sort)
 	if err != nil {
 		return httperr.New().Bad(err)
 	}

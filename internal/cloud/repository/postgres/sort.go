@@ -23,20 +23,16 @@ func (s Sort) OrderQuery(q string) string {
 		return q
 	}
 
-	if _, ok := s.def[s.Name]; !ok {
+	col, ok := s.def[s.Name]
+	if !ok {
 		return q
 	}
 
-	return fmt.Sprintf("select t.* from(%s) t order by %s %s", q, s.Name, s.Type)
+	return fmt.Sprintf("select t.* from(%s) t order by t.%s %s", q, col, s.Type)
 }
 
-type columnsDef map[string]struct{}
-
-func newColumnsDef(cols ...string) columnsDef {
-	cc := make(columnsDef, len(cols))
-	for _, c := range cols {
-		cc[c] = struct{}{}
-	}
-
-	return cc
-}
+// columnsDef set the mapping of input to column
+// example:
+// "createdAt": "created_at",
+// "parentId":  "parent_id",
+type columnsDef map[string]string

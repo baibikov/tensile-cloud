@@ -24,7 +24,7 @@ type Folder interface {
 
 type File interface {
 	Upload(ctx context.Context, files []types.File) ([]types.Upload, error)
-	Find(ctx context.Context, folderID string) ([]types.File, error)
+	Find(ctx context.Context, folderID string, sort types.Sort) ([]types.File, error)
 	Rename(ctx context.Context, file types.File) (types.File, error)
 	Move(ctx context.Context, move types.Move) error
 	Download(ctx context.Context, id string) (types.DownloadFile, error)

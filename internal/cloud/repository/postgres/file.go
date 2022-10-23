@@ -43,7 +43,7 @@ func (f File) RemoveMeta(ctx context.Context, id string) error {
 	return err
 }
 
-func (f File) GetByFolderID(ctx context.Context, folderID string) (files []types.File, err error) {
+func (f File) GetByFolderID(ctx context.Context, folderID string, sort types.Sort) (files []types.File, err error) {
 	query := `
 		select 
 		       id, 
@@ -57,6 +57,14 @@ func (f File) GetByFolderID(ctx context.Context, folderID string) (files []types
 		  and is_deleted = false
 	`
 
+	ssort := NewSort(sort, columnsDef{
+		"name":      "name",
+		"type":      "type",
+		"createdAt": "created_at",
+		"updatedAt": "updated_at",
+	})
+
+	query = ssort.OrderQuery(query)
 	return files, f.db.SelectContext(ctx, &files, query, folderID)
 }
 
