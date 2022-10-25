@@ -7,8 +7,6 @@ import (
 	"github.com/baibikov/tensile-cloud/internal/cloud/mocks"
 )
 
-// TODO: нужно много четких тестов.
-
 //go:generate minimock -i Saver -o ./mocks/saver.go
 
 type FileSuite struct {
