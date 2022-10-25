@@ -187,9 +187,11 @@ func (f File) Copy(ctx context.Context, fcopy types.CopyFile) (created types.Fil
 		return types.File{}, err
 	}
 	defer func() {
-		if err != nil {
-			multierr.AppendInto(&err, f.rollbackSavedFile(ctx, created.ID, created.FileName()))
+		if err == nil {
+			return
 		}
+
+		multierr.AppendInto(&err, f.rollbackSavedFile(ctx, created.ID, created.FileName()))
 	}()
 
 	src, err := f.filerepo.GetByID(ctx, fcopy.CopyID)
