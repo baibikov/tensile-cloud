@@ -75,7 +75,10 @@ func runApp() (err error) {
 
 	go func() {
 		logrus.Infof("start listen app server by host: %s", cconfig.API.Host)
-		multierr.AppendInto(&err, server.Serve(cconfig.API.Host))
+		if serr := server.Serve(cconfig.API.Host); serr != nil {
+			multierr.AppendInto(&err, serr)
+			cancel()
+		}
 	}()
 
 	<-ctx.Done()
