@@ -5,3 +5,4 @@
 /.data/*
 /static/swagger-ui/generated/*
 .fleet/*
+/bin/*

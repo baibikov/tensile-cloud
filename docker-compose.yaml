@@ -1,7 +1,7 @@
-version: '3.1'
+version: '3.8'
 services:
   cloud-db:
-    container_name: tensive-cloud-db
+    container_name: tensile-cloud-db
     image: postgres
     restart: always
     ports:
@@ -10,3 +10,17 @@ services:
       POSTGRES_PASSWORD: 123
       POSTGRES_USER: root
       POSTGRES_DB: cloud
+  api:
+    build:
+      context: .
+      dockerfile: "./docker/api/Dockerfile"
+    container_name: tensile-cloud-api
+    volumes:
+      - "myapp:/home/app"
+    networks:
+      - default
+    ports:
+      - "9090:9090"
+volumes:
+  myapp:
+    external: true
